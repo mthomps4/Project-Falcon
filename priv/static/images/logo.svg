@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C3AED"/>
+      <stop offset="50%" style="stop-color:#6D28D9"/>
+      <stop offset="100%" style="stop-color:#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#A78BFA"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#2DD4BF;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:0.6"/>
+      <stop offset="50%" style="stop-color:#14B8A6;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.6"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Subtle arc reactor glow behind -->
+  <circle cx="256" cy="280" r="45" fill="url(#glowGrad)" opacity="0.3" filter="url(#softGlow)"/>
+
+  <!-- Left wing -->
+  <path d="
+    M 240 230
+    L 180 180
+    L 80 120
+    L 40 95
+    L 55 130
+    L 85 165
+    L 60 155
+    L 35 140
+    L 55 175
+    L 90 200
+    L 70 195
+    L 50 188
+    L 75 215
+    L 120 238
+    L 165 255
+    L 210 268
+    L 240 275
+    Z
+  " fill="url(#wingGrad)" opacity="0.95"/>
+
+  <!-- Right wing -->
+  <path d="
+    M 272 230
+    L 332 180
+    L 432 120
+    L 472 95
+    L 457 130
+    L 427 165
+    L 452 155
+    L 477 140
+    L 457 175
+    L 422 200
+    L 442 195
+    L 462 188
+    L 437 215
+    L 392 238
+    L 347 255
+    L 302 268
+    L 272 275
+    Z
+  " fill="url(#wingGrad)" opacity="0.95"/>
+
+  <!-- Wing detail lines left -->
+  <path d="M 230 240 L 120 185 L 75 160" stroke="#2DD4BF" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 225 250 L 140 210 L 90 190" stroke="#2DD4BF" stroke-width="1" fill="none" opacity="0.35"/>
+  <path d="M 220 258 L 155 228 L 105 212" stroke="#A78BFA" stroke-width="1" fill="none" opacity="0.3"/>
+
+  <!-- Wing detail lines right -->
+  <path d="M 282 240 L 392 185 L 437 160" stroke="#2DD4BF" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 287 250 L 372 210 L 422 190" stroke="#2DD4BF" stroke-width="1" fill="none" opacity="0.35"/>
+  <path d="M 292 258 L 357 228 L 407 212" stroke="#A78BFA" stroke-width="1" fill="none" opacity="0.3"/>
+
+  <!-- Body -->
+  <path d="
+    M 256 130
+    L 240 170
+    L 235 210
+    L 238 260
+    L 242 310
+    L 248 360
+    L 253 390
+    L 256 400
+    L 259 390
+    L 264 360
+    L 270 310
+    L 274 260
+    L 277 210
+    L 272 170
+    Z
+  " fill="url(#bodyGrad)"/>
+
+  <!-- Head crest -->
+  <path d="
+    M 256 100
+    L 248 130
+    L 256 125
+    L 264 130
+    Z
+  " fill="#A78BFA"/>
+
+  <!-- Eye visor -->
+  <path d="
+    M 244 168
+    L 256 162
+    L 268 168
+    L 256 172
+    Z
+  " fill="#2DD4BF" filter="url(#glow)"/>
+
+  <!-- Arc reactor core -->
+  <circle cx="256" cy="240" r="12" fill="none" stroke="#2DD4BF" stroke-width="2.5" opacity="0.9" filter="url(#glow)"/>
+  <circle cx="256" cy="240" r="6" fill="#2DD4BF" opacity="0.8" filter="url(#glow)"/>
+  <circle cx="256" cy="240" r="3" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Arc reactor ring segments -->
+  <path d="M 256 224 L 256 220" stroke="#2DD4BF" stroke-width="1.5" opacity="0.6"/>
+  <path d="M 256 256 L 256 260" stroke="#2DD4BF" stroke-width="1.5" opacity="0.6"/>
+  <path d="M 240 240 L 236 240" stroke="#2DD4BF" stroke-width="1.5" opacity="0.6"/>
+  <path d="M 272 240 L 276 240" stroke="#2DD4BF" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Tail feathers -->
+  <path d="M 248 380 L 235 420 L 245 405 L 250 395" fill="#6D28D9" opacity="0.7"/>
+  <path d="M 256 385 L 256 430 L 258 405" fill="#6D28D9" opacity="0.5"/>
+  <path d="M 264 380 L 277 420 L 267 405 L 262 395" fill="#6D28D9" opacity="0.7"/>
+
+  <!-- Bottom arc HUD frame -->
+  <path d="M 160 440 Q 256 470 352 440" stroke="url(#arcGrad)" stroke-width="2" fill="none" opacity="0.5"/>
+  <path d="M 190 450 Q 256 465 322 450" stroke="url(#arcGrad)" stroke-width="1" fill="none" opacity="0.3"/>
+</svg>

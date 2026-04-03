@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C3AED"/>
+      <stop offset="100%" style="stop-color:#14B8A6"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#A78BFA"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <filter id="g"><feGaussianBlur stdDeviation="1" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+  </defs>
+  <!-- Left wing -->
+  <path d="M 29 28 L 20 22 L 8 14 L 4 11 L 7 17 L 6 16 L 4 15 L 7 21 L 14 30 L 26 34 L 29 34 Z" fill="url(#wg)" opacity="0.95"/>
+  <!-- Right wing -->
+  <path d="M 35 28 L 44 22 L 56 14 L 60 11 L 57 17 L 58 16 L 60 15 L 57 21 L 50 30 L 38 34 L 35 34 Z" fill="url(#wg)" opacity="0.95"/>
+  <!-- Body -->
+  <path d="M 32 14 L 29 22 L 28 30 L 29 40 L 31 50 L 32 52 L 33 50 L 35 40 L 36 30 L 35 22 Z" fill="url(#bg)"/>
+  <!-- Head crest -->
+  <path d="M 32 10 L 30 14 L 32 13 L 34 14 Z" fill="#A78BFA"/>
+  <!-- Eye visor -->
+  <path d="M 29 21 L 32 19 L 35 21 L 32 22 Z" fill="#2DD4BF" filter="url(#g)"/>
+  <!-- Arc reactor -->
+  <circle cx="32" cy="30" r="2.5" fill="none" stroke="#2DD4BF" stroke-width="0.8" opacity="0.9" filter="url(#g)"/>
+  <circle cx="32" cy="30" r="1" fill="#2DD4BF" opacity="0.9"/>
+</svg>

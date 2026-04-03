@@ -1,0 +1,231 @@
+/* See the Tailwind configuration guide for advanced usage
+   https://tailwindcss.com/docs/configuration */
+
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/falcon_web";
+
+/* A Tailwind plugin that makes "hero-#{ICON}" classes available.
+   The heroicons installation itself is managed by your mix.exs */
+@plugin "../vendor/heroicons";
+
+/* daisyUI Tailwind Plugin. You can update this file by fetching the latest version with:
+   curl -sLO https://github.com/saadeghi/daisyui/releases/latest/download/daisyui.js
+   Make sure to look at the daisyUI changelog: https://daisyui.com/docs/changelog/ */
+@plugin "../vendor/daisyui" {
+  themes: false;
+}
+
+/* FALCON Dark — Stark Industries HUD aesthetic
+   Purple primary, teal accent, deep blue-gray base */
+@plugin "../vendor/daisyui-theme" {
+  name: "dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  /* Deep blue-gray backgrounds with subtle purple undertone */
+  --color-base-100: oklch(18% 0.02 280);
+  --color-base-200: oklch(14.5% 0.025 280);
+  --color-base-300: oklch(11% 0.03 280);
+  --color-base-content: oklch(93% 0.01 280);
+  /* Purple primary — Falcon suit inspired */
+  --color-primary: oklch(58% 0.24 280);
+  --color-primary-content: oklch(97% 0.01 280);
+  /* Teal secondary — arc reactor glow */
+  --color-secondary: oklch(72% 0.15 175);
+  --color-secondary-content: oklch(15% 0.03 175);
+  /* Bright teal accent */
+  --color-accent: oklch(78% 0.16 175);
+  --color-accent-content: oklch(15% 0.03 175);
+  /* Deep neutral */
+  --color-neutral: oklch(22% 0.03 280);
+  --color-neutral-content: oklch(90% 0.01 280);
+  --color-info: oklch(65% 0.16 245);
+  --color-info-content: oklch(97% 0.01 245);
+  --color-success: oklch(72% 0.15 165);
+  --color-success-content: oklch(15% 0.03 165);
+  --color-warning: oklch(78% 0.16 75);
+  --color-warning-content: oklch(15% 0.03 75);
+  --color-error: oklch(62% 0.24 25);
+  --color-error-content: oklch(97% 0.01 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* FALCON Light — clean mode with purple/teal accents */
+@plugin "../vendor/daisyui-theme" {
+  name: "light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(98% 0.005 280);
+  --color-base-200: oklch(95% 0.008 280);
+  --color-base-300: oklch(91% 0.012 280);
+  --color-base-content: oklch(20% 0.02 280);
+  --color-primary: oklch(52% 0.24 280);
+  --color-primary-content: oklch(98% 0.01 280);
+  --color-secondary: oklch(58% 0.15 175);
+  --color-secondary-content: oklch(98% 0.01 175);
+  --color-accent: oklch(62% 0.16 175);
+  --color-accent-content: oklch(98% 0.01 175);
+  --color-neutral: oklch(35% 0.025 280);
+  --color-neutral-content: oklch(98% 0.005 280);
+  --color-info: oklch(55% 0.16 245);
+  --color-info-content: oklch(97% 0.01 245);
+  --color-success: oklch(58% 0.15 165);
+  --color-success-content: oklch(98% 0.01 165);
+  --color-warning: oklch(70% 0.16 75);
+  --color-warning-content: oklch(15% 0.03 75);
+  --color-error: oklch(55% 0.24 25);
+  --color-error-content: oklch(97% 0.01 25);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Add variants based on LiveView classes */
+@custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+/* Use the data attribute for dark mode  */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Make LiveView wrapper divs transparent for layout */
+[data-phx-session], [data-phx-teleported-src] { display: contents }
+
+/* ========================================
+   FALCON Custom Styles
+   ======================================== */
+
+/* Scrollbar styling */
+.falcon-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.falcon-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.falcon-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(40% 0.03 280);
+  border-radius: 3px;
+}
+.falcon-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: oklch(50% 0.05 280);
+}
+
+/* Glow effects */
+.falcon-glow {
+  box-shadow: 0 0 20px oklch(58% 0.24 280 / 0.15), 0 0 40px oklch(72% 0.15 175 / 0.08);
+}
+
+.falcon-glow-teal {
+  box-shadow: 0 0 12px oklch(72% 0.15 175 / 0.25), 0 0 24px oklch(72% 0.15 175 / 0.1);
+}
+
+.falcon-glow-purple {
+  box-shadow: 0 0 12px oklch(58% 0.24 280 / 0.25), 0 0 24px oklch(58% 0.24 280 / 0.1);
+}
+
+/* Gradient text */
+.falcon-gradient-text {
+  background: linear-gradient(135deg, oklch(65% 0.24 280), oklch(78% 0.16 175));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle border glow */
+.falcon-border-glow {
+  border: 1px solid oklch(58% 0.24 280 / 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.falcon-border-glow:hover {
+  border-color: oklch(58% 0.24 280 / 0.4);
+  box-shadow: 0 0 8px oklch(58% 0.24 280 / 0.1);
+}
+.falcon-border-glow:focus-within {
+  border-color: oklch(72% 0.15 175 / 0.6);
+  box-shadow: 0 0 12px oklch(72% 0.15 175 / 0.15);
+}
+
+/* Message animations */
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.falcon-message-in {
+  animation: messageIn 0.2s ease-out;
+}
+
+/* Streaming cursor blink */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.falcon-cursor::after {
+  content: "▋";
+  animation: cursorBlink 0.8s infinite;
+  color: oklch(72% 0.15 175);
+  margin-left: 2px;
+}
+
+/* Sidebar hover effect */
+.falcon-sidebar-item {
+  transition: all 0.15s ease;
+  border-left: 3px solid transparent;
+}
+.falcon-sidebar-item:hover {
+  border-left-color: oklch(58% 0.24 280 / 0.5);
+  background: oklch(22% 0.03 280 / 0.5);
+}
+.falcon-sidebar-item.active {
+  border-left-color: oklch(72% 0.15 175);
+  background: oklch(22% 0.03 280 / 0.8);
+}
+
+/* Arc reactor pulse for loading states */
+@keyframes reactorPulse {
+  0%, 100% { box-shadow: 0 0 8px oklch(72% 0.15 175 / 0.4); }
+  50% { box-shadow: 0 0 20px oklch(72% 0.15 175 / 0.7), 0 0 40px oklch(72% 0.15 175 / 0.3); }
+}
+.falcon-pulse {
+  animation: reactorPulse 2s ease-in-out infinite;
+}
+
+/* Code blocks */
+.falcon-prose pre {
+  background: oklch(12% 0.025 280) !important;
+  border: 1px solid oklch(25% 0.03 280);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+}
+.falcon-prose code {
+  color: oklch(78% 0.16 175);
+  font-size: 0.875em;
+}
+.falcon-prose pre code {
+  color: oklch(85% 0.01 280);
+}
+
+/* Input focus ring */
+.falcon-input {
+  transition: all 0.2s ease;
+}
+.falcon-input:focus {
+  outline: none;
+  border-color: oklch(58% 0.24 280 / 0.6);
+  box-shadow: 0 0 0 3px oklch(58% 0.24 280 / 0.15), 0 0 12px oklch(72% 0.15 175 / 0.1);
+}

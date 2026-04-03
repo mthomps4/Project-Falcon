@@ -1,0 +1,68 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="space-y-4">
+    <div class="text-center">
+      <h2 class="text-lg font-semibold">Welcome</h2>
+      <p class="text-xs opacity-50 mt-1">{@user.email}</p>
+    </div>
+
+    <.form
+      :if={!@user.confirmed_at}
+      for={@form}
+      id="confirmation_form"
+      action={~p"/users/log-in?_action=confirmed"}
+      phx-mounted={JS.focus_first()}
+    >
+      <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+      <div class="space-y-2">
+        <.button
+          name={@form[:remember_me].name}
+          value="true"
+          phx-disable-with="Confirming..."
+          class="btn btn-primary w-full shadow-lg shadow-primary/20"
+        >
+          Confirm and stay logged in
+        </.button>
+        <.button phx-disable-with="Confirming..." class="btn btn-ghost btn-sm w-full opacity-60">
+          Confirm this time only
+        </.button>
+      </div>
+    </.form>
+
+    <.form
+      :if={@user.confirmed_at}
+      for={@form}
+      id="login_form"
+      action={~p"/users/log-in"}
+      phx-mounted={JS.focus_first()}
+    >
+      <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
+      <%= if @current_scope do %>
+        <.button
+          variant="primary"
+          phx-disable-with="Logging in..."
+          class="btn btn-primary w-full shadow-lg shadow-primary/20"
+        >
+          Log in
+        </.button>
+      <% else %>
+        <div class="space-y-2">
+          <.button
+            name={@form[:remember_me].name}
+            value="true"
+            phx-disable-with="Logging in..."
+            class="btn btn-primary w-full shadow-lg shadow-primary/20"
+          >
+            Keep me logged in
+          </.button>
+          <.button phx-disable-with="Logging in..." class="btn btn-ghost btn-sm w-full opacity-60">
+            Log in this time only
+          </.button>
+        </div>
+      <% end %>
+    </.form>
+
+    <p :if={!@user.confirmed_at} class="text-[10px] text-center opacity-30 mt-4">
+      Tip: You can enable password login in your account settings.
+    </p>
+  </div>
+</Layouts.app>

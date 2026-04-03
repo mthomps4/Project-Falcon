@@ -1,0 +1,66 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="space-y-5">
+    <div class="text-center">
+      <h2 class="text-lg font-semibold">Account Settings</h2>
+      <p class="text-xs opacity-50 mt-1">Manage your email and password</p>
+    </div>
+
+    <.form :let={f} for={@email_changeset} action={~p"/users/settings"} id="update_email">
+      <input type="hidden" name="action" value="update_email" />
+      <div class="space-y-3">
+        <.input
+          field={f[:email]}
+          type="email"
+          label="Email"
+          autocomplete="username"
+          spellcheck="false"
+          required
+        />
+      </div>
+      <.button
+        variant="primary"
+        phx-disable-with="Saving..."
+        class="btn btn-primary btn-sm w-full mt-3"
+      >
+        Update Email
+      </.button>
+    </.form>
+
+    <div class="divider opacity-20" />
+
+    <.form :let={f} for={@password_changeset} action={~p"/users/settings"} id="update_password">
+      <input type="hidden" name="action" value="update_password" />
+      <div class="space-y-3">
+        <.input
+          field={f[:password]}
+          type="password"
+          label="New password"
+          autocomplete="new-password"
+          spellcheck="false"
+          required
+        />
+        <.input
+          field={f[:password_confirmation]}
+          type="password"
+          label="Confirm new password"
+          autocomplete="new-password"
+          spellcheck="false"
+          required
+        />
+      </div>
+      <.button
+        variant="primary"
+        phx-disable-with="Saving..."
+        class="btn btn-primary btn-sm w-full mt-3"
+      >
+        Update Password
+      </.button>
+    </.form>
+
+    <div class="text-center pt-2">
+      <.link navigate={~p"/chat"} class="text-xs text-primary hover:underline">
+        Back to FALCON
+      </.link>
+    </div>
+  </div>
+</Layouts.app>

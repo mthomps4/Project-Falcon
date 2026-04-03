@@ -1,0 +1,72 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="space-y-4">
+    <div class="text-center">
+      <h2 class="text-lg font-semibold">Welcome back</h2>
+      <p :if={!@current_scope} class="text-xs opacity-50 mt-1">
+        Don't have an account?
+        <.link navigate={~p"/users/register"} class="text-primary hover:underline font-medium">
+          Sign up
+        </.link>
+      </p>
+      <p :if={@current_scope} class="text-xs opacity-50 mt-1">
+        Re-authenticate to continue.
+      </p>
+    </div>
+
+    <div :if={local_mail_adapter?()} class="alert alert-info text-xs">
+      <.icon name="hero-information-circle" class="size-4 shrink-0" />
+      <p>
+        Local mail adapter active.
+        <.link href="/dev/mailbox" class="underline">View mailbox</.link>
+      </p>
+    </div>
+
+    <.form :let={f} for={@form} as={:user} id="login_form_password" action={~p"/users/log-in"}>
+      <div class="space-y-3">
+        <.input
+          readonly={!!@current_scope}
+          field={f[:email]}
+          type="email"
+          label="Email"
+          autocomplete="username"
+          spellcheck="false"
+          required
+          phx-mounted={JS.focus()}
+        />
+        <.input
+          field={f[:password]}
+          type="password"
+          label="Password"
+          autocomplete="current-password"
+          spellcheck="false"
+        />
+      </div>
+      <div class="mt-4 space-y-2">
+        <.button
+          class="btn btn-primary w-full gap-2 shadow-lg shadow-primary/20"
+          name={@form[:remember_me].name}
+          value="true"
+        >
+          <.icon name="hero-arrow-right-on-rectangle" class="size-4" /> Log in
+        </.button>
+      </div>
+    </.form>
+
+    <div class="divider text-xs opacity-30">or</div>
+
+    <.form :let={f} for={@form} as={:user} id="login_form_magic" action={~p"/users/log-in"}>
+      <.input
+        readonly={!!@current_scope}
+        field={f[:email]}
+        type="email"
+        label="Email"
+        autocomplete="username"
+        spellcheck="false"
+        required
+      />
+      <.button class="btn btn-ghost btn-sm w-full mt-2 opacity-60">
+        Send magic link instead
+      </.button>
+    </.form>
+  </div>
+</Layouts.app>
