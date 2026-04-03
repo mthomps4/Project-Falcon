@@ -28,6 +28,7 @@ defmodule FalconWeb.ChatLive do
      |> assign(:show_new_thread_modal, false)
      |> assign(:sidebar_collapsed, false)
      |> assign(:editing_thread_id, nil)
+     |> assign(:mobile_sidebar_open, false)
      |> assign(:page_title, "FALCON")}
   end
 
@@ -150,7 +151,10 @@ defmodule FalconWeb.ChatLive do
   end
 
   def handle_event("select_thread", %{"id" => thread_id}, socket) do
-    {:noreply, push_patch(socket, to: ~p"/chat/#{thread_id}")}
+    {:noreply,
+     socket
+     |> assign(:mobile_sidebar_open, false)
+     |> push_patch(to: ~p"/chat/#{thread_id}")}
   end
 
   def handle_event("start_rename", %{"id" => thread_id}, socket) do
@@ -206,6 +210,10 @@ defmodule FalconWeb.ChatLive do
 
   def handle_event("toggle_sidebar", _params, socket) do
     {:noreply, assign(socket, :sidebar_collapsed, !socket.assigns.sidebar_collapsed)}
+  end
+
+  def handle_event("toggle_mobile_sidebar", _params, socket) do
+    {:noreply, assign(socket, :mobile_sidebar_open, !socket.assigns.mobile_sidebar_open)}
   end
 
 
@@ -268,10 +276,85 @@ defmodule FalconWeb.ChatLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex h-screen overflow-hidden">
-      <%!-- ==================== SIDEBAR ==================== --%>
+    <div class="flex h-dvh overflow-hidden">
+      <%!-- ==================== MOBILE SIDEBAR OVERLAY ==================== --%>
+      <div
+        :if={@mobile_sidebar_open}
+        class="fixed inset-0 z-40 md:hidden"
+      >
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" phx-click="toggle_mobile_sidebar"></div>
+        <aside class="absolute left-0 top-0 bottom-0 w-72 flex flex-col bg-base-200 border-r border-base-300/50 shadow-2xl">
+          <%!-- Logo Area --%>
+          <div class="p-4 border-b border-base-300/30">
+            <div class="flex items-center gap-3">
+              <button phx-click="toggle_mobile_sidebar" class="flex-shrink-0 cursor-pointer group">
+                <img src={~p"/images/falcon-icon.svg"} class="w-8 h-8 transition-transform group-hover:scale-110" />
+              </button>
+              <div class="flex items-center justify-between flex-1 min-w-0">
+                <span class="text-lg font-bold tracking-wider falcon-gradient-text">FALCON</span>
+                <.theme_toggle />
+              </div>
+            </div>
+          </div>
+          <%!-- New Chat --%>
+          <div class="p-3">
+            <button phx-click="new_thread" class="btn btn-primary w-full gap-2 shadow-lg transition-all duration-200 hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98]">
+              <.icon name="hero-plus" class="size-5" />
+              <span>New Chat</span>
+            </button>
+          </div>
+          <%!-- Thread List --%>
+          <nav class="flex-1 overflow-y-auto falcon-scrollbar px-2 space-y-0.5">
+            <div
+              :for={thread <- @threads}
+              class={["falcon-sidebar-item group rounded-lg px-3 py-2.5 cursor-pointer", @current_thread && @current_thread.id == thread.id && "active"]}
+              phx-click="select_thread"
+              phx-value-id={thread.id}
+            >
+              <div class="flex items-center justify-between">
+                <div class="truncate flex-1 min-w-0">
+                  <div class="text-sm font-medium truncate">{thread.title || "New Chat"}</div>
+                  <div class="flex items-center gap-1.5 mt-0.5">
+                    <span class="text-[10px] opacity-40 truncate">{thread.model}</span>
+                    <span :if={thread.scoped_paths != []} class="inline-flex items-center gap-0.5 text-[10px] text-secondary opacity-60">
+                      <.icon name="hero-folder-micro" class="size-2.5" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div :if={@threads == []} class="text-center py-12 px-4">
+              <.icon name="hero-chat-bubble-left-right" class="size-8 opacity-20 mx-auto mb-2" />
+              <p class="text-xs opacity-30">No conversations yet</p>
+            </div>
+          </nav>
+          <%!-- REPL + User --%>
+          <div class="px-3 pb-1">
+            <a href="http://arch:4001" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg text-secondary/60 hover:text-secondary hover:bg-secondary/10 transition-all duration-200">
+              <.icon name="hero-command-line" class="size-4" />
+              <span class="text-xs font-mono">REPL</span>
+              <.icon name="hero-arrow-top-right-on-square-micro" class="size-3 opacity-40" />
+            </a>
+          </div>
+          <div class="p-3 border-t border-base-300/30">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <span class="text-xs font-bold text-primary">{String.first(@current_scope.user.email) |> String.upcase()}</span>
+              </div>
+              <div class="flex items-center justify-between flex-1 min-w-0">
+                <span class="text-xs truncate opacity-50">{@current_scope.user.email}</span>
+                <.link href={~p"/users/log-out"} method="delete" class="opacity-30 hover:opacity-80 transition-opacity p-1" title="Log out">
+                  <.icon name="hero-arrow-right-start-on-rectangle-micro" class="size-4" />
+                </.link>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <%!-- ==================== DESKTOP SIDEBAR ==================== --%>
       <aside class={[
-        "flex flex-col border-r border-base-300/50 bg-base-200 transition-all duration-300 ease-in-out",
+        "hidden md:flex flex-col border-r border-base-300/50 bg-base-200 transition-all duration-300 ease-in-out flex-shrink-0",
         if(@sidebar_collapsed, do: "w-16", else: "w-72")
       ]}>
         <%!-- Logo Area --%>
@@ -392,11 +475,15 @@ defmodule FalconWeb.ChatLive do
       </aside>
 
       <%!-- ==================== MAIN CONTENT ==================== --%>
-      <main class="flex-1 flex flex-col min-w-0 bg-base-100">
+      <main class="flex-1 flex flex-col min-w-0 min-h-0 bg-base-100">
         <%!-- Active Thread View --%>
-        <div :if={@current_thread} class="flex-1 flex flex-col">
-          <%!-- Thread Header --%>
-          <header class="px-6 py-3 border-b border-base-300/30 flex items-center gap-4 bg-base-100/80 backdrop-blur-sm">
+        <div :if={@current_thread} class="flex flex-col h-full">
+          <%!-- Thread Header (sticky) --%>
+          <header class="flex-shrink-0 px-4 md:px-6 py-3 border-b border-base-300/30 flex items-center gap-3 bg-base-100/80 backdrop-blur-sm">
+            <%!-- Mobile menu button --%>
+            <button phx-click="toggle_mobile_sidebar" class="md:hidden p-1 rounded-lg hover:bg-base-200 transition-colors">
+              <.icon name="hero-bars-3" class="size-5" />
+            </button>
             <div class="flex-1 min-w-0">
               <%!-- Inline rename --%>
               <form
@@ -410,7 +497,7 @@ defmodule FalconWeb.ChatLive do
                   type="text"
                   name="title"
                   value={@current_thread.title || ""}
-                  class="input input-sm input-bordered bg-base-200/50 text-sm font-semibold w-64"
+                  class="input input-sm input-bordered bg-base-200/50 text-sm font-semibold w-full max-w-64"
                   autofocus
                   phx-key="escape"
                   phx-keydown="cancel_rename"
@@ -428,13 +515,13 @@ defmodule FalconWeb.ChatLive do
                 <button
                   phx-click="start_rename"
                   phx-value-id={@current_thread.id}
-                  class="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-base-300/50"
+                  class="opacity-30 hover:opacity-80 transition-opacity p-0.5 rounded hover:bg-base-300/50 flex-shrink-0"
                   title="Rename"
                 >
                   <.icon name="hero-pencil-square-micro" class="size-3.5" />
                 </button>
               </div>
-              <div class="flex items-center gap-2 mt-0.5">
+              <div class="flex items-center gap-2 mt-0.5 flex-wrap">
                 <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                   <.icon name="hero-cpu-chip-micro" class="size-3" />
                   {@current_thread.model}
@@ -444,19 +531,19 @@ defmodule FalconWeb.ChatLive do
                   class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-secondary/10 text-secondary"
                 >
                   <.icon name="hero-folder-micro" class="size-3" />
-                  {length(@current_thread.scoped_paths)} path(s) scoped
+                  {length(@current_thread.scoped_paths)} path(s)
                 </span>
                 <span
                   :if={@current_thread.system_prompt && @current_thread.system_prompt != ""}
-                  class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-accent/10 text-accent"
+                  class="hidden sm:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-accent/10 text-accent"
                 >
-                  <.icon name="hero-document-text-micro" class="size-3" /> Custom prompt
+                  <.icon name="hero-document-text-micro" class="size-3" /> Prompt
                 </span>
               </div>
             </div>
             <div
               :if={@streaming}
-              class="flex items-center gap-2 text-xs text-secondary"
+              class="flex items-center gap-2 text-xs text-secondary flex-shrink-0"
             >
               <span class="relative flex h-2.5 w-2.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75">
@@ -464,17 +551,18 @@ defmodule FalconWeb.ChatLive do
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary falcon-pulse">
                 </span>
               </span>
-              Generating
+              <span class="hidden sm:inline">Generating</span>
             </div>
           </header>
 
-          <%!-- Messages Container --%>
+          <%!-- Messages Container (scrollable) --%>
           <div
             id="messages"
-            class="flex-1 overflow-y-auto min-h-0 falcon-scrollbar"
+            class="flex-1 overflow-y-auto falcon-scrollbar"
+            style="min-height: 0"
             phx-hook="ScrollBottom"
           >
-            <div class="max-w-3xl mx-auto px-6 py-6 space-y-6">
+            <div class="max-w-3xl mx-auto px-4 md:px-6 py-6 space-y-6">
               <%!-- System prompt indicator --%>
               <div
                 :if={@current_thread.system_prompt && @current_thread.system_prompt != ""}
@@ -496,14 +584,14 @@ defmodule FalconWeb.ChatLive do
                 ]}
               >
                 <%!-- User Message --%>
-                <div :if={msg.role == "user"} class="max-w-[75%]">
+                <div :if={msg.role == "user"} class="max-w-[85%] md:max-w-[75%]">
                   <div class="rounded-2xl rounded-br-md px-4 py-2.5 bg-primary text-primary-content">
                     <div class="text-sm whitespace-pre-wrap">{msg.content}</div>
                   </div>
                 </div>
 
                 <%!-- Assistant Message --%>
-                <div :if={msg.role == "assistant"} class="max-w-[85%] flex gap-3">
+                <div :if={msg.role == "assistant"} class="max-w-[95%] md:max-w-[85%] flex gap-2 md:gap-3">
                   <div class="w-7 h-7 rounded-lg bg-base-200 flex items-center justify-center flex-shrink-0 mt-1 falcon-border-glow">
                     <img src={~p"/images/falcon-icon.svg"} class="w-4 h-4" />
                   </div>
@@ -515,7 +603,7 @@ defmodule FalconWeb.ChatLive do
                 </div>
 
                 <%!-- Tool Result --%>
-                <div :if={msg.role == "tool"} class="max-w-[85%] flex gap-3">
+                <div :if={msg.role == "tool"} class="max-w-[95%] md:max-w-[85%] flex gap-2 md:gap-3">
                   <div class="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0 mt-1">
                     <.icon name="hero-wrench-screwdriver-micro" class="size-3.5 text-secondary" />
                   </div>
@@ -534,7 +622,7 @@ defmodule FalconWeb.ChatLive do
 
               <%!-- Streaming Response --%>
               <div :if={@streaming} class="flex justify-start">
-                <div class="max-w-[85%] flex gap-3">
+                <div class="max-w-[95%] md:max-w-[85%] flex gap-2 md:gap-3">
                   <div class="w-7 h-7 rounded-lg bg-base-200 flex items-center justify-center flex-shrink-0 mt-1 falcon-pulse">
                     <img src={~p"/images/falcon-icon.svg"} class="w-4 h-4" />
                   </div>
@@ -566,23 +654,23 @@ defmodule FalconWeb.ChatLive do
             </div>
           </div>
 
-          <%!-- Input Area --%>
-          <div class="border-t border-base-300/30 bg-base-100">
-            <div class="max-w-3xl mx-auto px-6 py-4">
+          <%!-- Input Area (sticky bottom) --%>
+          <div class="flex-shrink-0 border-t border-base-300/30 bg-base-100">
+            <div class="max-w-3xl mx-auto px-4 md:px-6 py-3 md:py-4">
               <form phx-submit="send_message" class="relative">
-                <div class="falcon-border-glow rounded-2xl bg-base-200/50 overflow-hidden flex items-center">
-                  <input
-                    type="text"
+                <div class="falcon-border-glow rounded-2xl bg-base-200/50 overflow-hidden flex items-end">
+                  <textarea
                     name="message"
                     placeholder={
                       if(@streaming, do: "Waiting for response...", else: "Message FALCON...")
                     }
-                    class="flex-1 bg-transparent border-none px-5 py-4 text-sm placeholder:opacity-30 falcon-input focus:ring-0 focus:outline-none"
+                    class="flex-1 bg-transparent border-none px-4 md:px-5 py-3 md:py-4 text-sm placeholder:opacity-30 falcon-input focus:ring-0 focus:outline-none resize-none max-h-40 overflow-y-auto"
                     autocomplete="off"
                     disabled={@streaming}
                     id="message-input"
                     phx-hook="MessageInput"
-                  />
+                    rows="1"
+                  ></textarea>
                   <button
                     :if={!@streaming}
                     type="submit"
@@ -600,67 +688,72 @@ defmodule FalconWeb.ChatLive do
                   </button>
                 </div>
               </form>
-              <p class="text-[10px] text-center mt-2 opacity-20">
-                FALCON can make mistakes. Verify important information.
-              </p>
             </div>
           </div>
         </div>
 
         <%!-- ==================== EMPTY STATE ==================== --%>
-        <div :if={!@current_thread} class="flex-1 flex items-center justify-center">
-          <div class="text-center space-y-6 max-w-md px-6">
-            <div class="relative inline-block">
-              <img src={~p"/images/logo.svg"} class="w-28 h-28 mx-auto" />
-              <div class="absolute inset-0 w-28 h-28 mx-auto rounded-full bg-primary/5 blur-2xl">
+        <div :if={!@current_thread} class="flex-1 flex flex-col min-h-0">
+          <%!-- Mobile header for empty state --%>
+          <div class="md:hidden flex-shrink-0 px-4 py-3 border-b border-base-300/30">
+            <button phx-click="toggle_mobile_sidebar" class="p-1 rounded-lg hover:bg-base-200 transition-colors">
+              <.icon name="hero-bars-3" class="size-5" />
+            </button>
+          </div>
+          <div class="flex-1 flex items-center justify-center">
+            <div class="text-center space-y-6 max-w-md px-6">
+              <div class="relative inline-block">
+                <img src={~p"/images/logo.svg"} class="w-28 h-28 mx-auto" />
+                <div class="absolute inset-0 w-28 h-28 mx-auto rounded-full bg-primary/5 blur-2xl">
+                </div>
               </div>
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold tracking-wider falcon-gradient-text mb-2">FALCON</h2>
-              <p class="text-sm opacity-40 leading-relaxed">
-                Your personal AI assistant. Start a conversation, choose a model,
-                and optionally scope it to a project folder for agent-powered code work.
-              </p>
-            </div>
-            <div class="grid grid-cols-2 gap-3 text-left">
-              <button
-                phx-click="new_thread"
-                class="p-4 rounded-xl bg-base-200/50 hover:bg-base-200 transition-all falcon-border-glow text-left group"
-              >
-                <.icon
-                  name="hero-chat-bubble-left-right"
-                  class="size-5 text-primary mb-2 group-hover:scale-110 transition-transform"
-                />
-                <div class="text-xs font-medium">New Chat</div>
-                <div class="text-[10px] opacity-40 mt-0.5">Start a conversation</div>
-              </button>
-              <button
-                phx-click="new_thread"
-                class="p-4 rounded-xl bg-base-200/50 hover:bg-base-200 transition-all falcon-border-glow text-left group"
-              >
-                <.icon
-                  name="hero-folder-open"
-                  class="size-5 text-secondary mb-2 group-hover:scale-110 transition-transform"
-                />
-                <div class="text-xs font-medium">Code Agent</div>
-                <div class="text-[10px] opacity-40 mt-0.5">Scope to a project folder</div>
-              </button>
-            </div>
-
-            <div :if={@models != []} class="pt-2">
-              <p class="text-[10px] opacity-25 mb-2">
-                {length(@models)} model(s) available
-              </p>
-              <div class="flex flex-wrap justify-center gap-1.5">
-                <span
-                  :for={model <- Enum.take(@models, 6)}
-                  class="text-[10px] px-2 py-0.5 rounded-full bg-base-200/50 opacity-30"
+              <div>
+                <h2 class="text-3xl font-bold tracking-wider falcon-gradient-text mb-2">FALCON</h2>
+                <p class="text-sm opacity-40 leading-relaxed">
+                  Your personal AI assistant. Start a conversation, choose a model,
+                  and optionally scope it to a project folder for agent-powered code work.
+                </p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-left">
+                <button
+                  phx-click="new_thread"
+                  class="p-4 rounded-xl bg-base-200/50 hover:bg-base-200 transition-all falcon-border-glow text-left group"
                 >
-                  {model.name}
-                </span>
-                <span :if={length(@models) > 6} class="text-[10px] px-2 py-0.5 opacity-20">
-                  +{length(@models) - 6} more
-                </span>
+                  <.icon
+                    name="hero-chat-bubble-left-right"
+                    class="size-5 text-primary mb-2 group-hover:scale-110 transition-transform"
+                  />
+                  <div class="text-xs font-medium">New Chat</div>
+                  <div class="text-[10px] opacity-40 mt-0.5">Start a conversation</div>
+                </button>
+                <button
+                  phx-click="new_thread"
+                  class="p-4 rounded-xl bg-base-200/50 hover:bg-base-200 transition-all falcon-border-glow text-left group"
+                >
+                  <.icon
+                    name="hero-folder-open"
+                    class="size-5 text-secondary mb-2 group-hover:scale-110 transition-transform"
+                  />
+                  <div class="text-xs font-medium">Code Agent</div>
+                  <div class="text-[10px] opacity-40 mt-0.5">Scope to a project folder</div>
+                </button>
+              </div>
+
+              <div :if={@models != []} class="pt-2">
+                <p class="text-[10px] opacity-25 mb-2">
+                  {length(@models)} model(s) available
+                </p>
+                <div class="flex flex-wrap justify-center gap-1.5">
+                  <span
+                    :for={model <- Enum.take(@models, 6)}
+                    class="text-[10px] px-2 py-0.5 rounded-full bg-base-200/50 opacity-30"
+                  >
+                    {model.name}
+                  </span>
+                  <span :if={length(@models) > 6} class="text-[10px] px-2 py-0.5 opacity-20">
+                    +{length(@models) - 6} more
+                  </span>
+                </div>
               </div>
             </div>
           </div>

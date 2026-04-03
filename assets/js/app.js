@@ -43,8 +43,13 @@ const Hooks = {
   },
   MessageInput: {
     mounted() {
+      this.resize = () => {
+        this.el.style.height = "auto"
+        this.el.style.height = this.el.scrollHeight + "px"
+      }
       this.handleEvent("clear-input", () => {
         this.el.value = ""
+        this.el.style.height = "auto"
       })
       this.el.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
@@ -52,6 +57,7 @@ const Hooks = {
           this.el.form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
         }
       })
+      this.el.addEventListener("input", () => this.resize())
     }
   }
 }
