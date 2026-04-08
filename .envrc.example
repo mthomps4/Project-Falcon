@@ -1,0 +1,20 @@
+# Copy to .envrc and fill in values, then run: direnv allow
+# See config/runtime.exs for how these are consumed
+
+# Phoenix
+export PORT="4000"
+# export PHX_SERVER="true"  # uncomment for production/release mode
+
+# Ollama (local LLM backend)
+export OLLAMA_URL="http://localhost:11434"
+
+# OpenAI (uncomment and set your key)
+# export OPENAI_API_KEY="sk-..."
+
+# Hugging Face (uncomment and set your token)
+# export HF_TOKEN="hf_..."
+
+# Production only
+# export DATABASE_URL="ecto://USER:PASS@HOST/falcon"
+# export SECRET_KEY_BASE=""  # generate with: mix phx.gen.secret
+# export PHX_HOST="falcon.example.com"

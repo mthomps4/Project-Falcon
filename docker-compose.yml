@@ -1,0 +1,16 @@
+services:
+  falcon:
+    build: .
+    container_name: falcon
+    restart: unless-stopped
+    env_file: .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-ecto://postgres:postgres@host.docker.internal/falcon}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:?Run: mix phx.gen.secret}
+      - PHX_HOST=${PHX_HOST:-localhost}
+      - PORT=${PORT:-4000}
+      - OLLAMA_URL=${OLLAMA_URL:-http://host.docker.internal:11434}
+    ports:
+      - "${PORT:-4000}:${PORT:-4000}"

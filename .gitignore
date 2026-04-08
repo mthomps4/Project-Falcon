@@ -38,3 +38,10 @@ npm-debug.log
 # direnv
 .envrc
 
+# Docker
+.env
+
+# AI tooling
+.claude/
+.expert/
+
