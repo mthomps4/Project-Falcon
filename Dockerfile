@@ -1,5 +1,5 @@
 # ---- Stage 1: Build ----
-FROM hexpm/elixir:1.19.5-erlang-28.3.2-debian-bookworm-20250407-slim AS build
+FROM hexpm/elixir:1.19.5-erlang-28.4-debian-bookworm-20260406-slim AS build
 
 RUN apt-get update && apt-get install -y build-essential git && rm -rf /var/lib/apt/lists/*
 
@@ -15,9 +15,10 @@ RUN mix deps.get --only prod && mix deps.compile
 COPY config/config.exs config/prod.exs config/runtime.exs config/
 COPY lib lib
 COPY priv priv
+COPY rel rel
 COPY assets assets
 
-RUN mix assets.deploy && mix compile && mix release
+RUN mix compile && mix assets.deploy && mix release
 
 # ---- Stage 2: Runtime ----
 FROM debian:bookworm-slim AS runtime
@@ -38,4 +39,4 @@ ENV PHX_SERVER=true
 
 EXPOSE 4000
 
-CMD ["bin/falcon", "start"]
+CMD ["sh", "-c", "bin/migrate && bin/server"]

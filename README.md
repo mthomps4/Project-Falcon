@@ -47,10 +47,10 @@ Open WebUI is powerful but Python-heavy. Phoenix LiveView gives us real-time str
 - **PathSandbox** -- per-thread directory restrictions for agent tool access
 - **PubSub** -- broadcast streaming tokens and status updates to connected clients
 
-## Getting Started
+## Getting Started (Dev)
 
 ```bash
-# Install dependencies
+# Install dependencies, create DB, run migrations + seeds, build assets
 mix setup
 
 # Start the server
@@ -59,9 +59,63 @@ mix phx.server
 
 Then visit [`localhost:4000`](http://localhost:4000). The first user to register becomes admin.
 
-### Configuration
+## Local Deploy (Prod)
 
-Set these environment variables or configure in `config/runtime.exs`:
+Runs via Docker on port 5000 behind Caddy reverse proxy on Tailscale.
+
+### Prerequisites
+
+- Docker + Docker Compose
+- PostgreSQL accessible from the Docker container
+- Caddy (or another reverse proxy) routing to port 5000
+
+### Setup
+
+1. Copy the example env and fill in your values:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   | Variable | Default | Description |
+   |---|---|---|
+   | `DATABASE_URL` | -- | PostgreSQL connection string (e.g. `ecto://postgres:postgres@host.docker.internal/falcon_prod`) |
+   | `SECRET_KEY_BASE` | -- | Generate with `mix phx.gen.secret` |
+   | `PHX_HOST` | `localhost` | Hostname or IP (e.g. Tailscale IP) |
+   | `PORT` | `4000` | HTTP port (use `5000` for prod) |
+   | `OLLAMA_URL` | `http://host.docker.internal:11434` | Ollama API endpoint |
+
+2. Build and start:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+   On first boot this will automatically create the database and run all migrations. On subsequent restarts it runs any pending migrations before starting the server.
+
+3. View logs:
+
+   ```bash
+   docker compose logs -f falcon
+   ```
+
+### Useful Commands
+
+```bash
+# Rebuild after code changes
+docker compose up -d --build
+
+# Stop
+docker compose down
+
+# Remote console into running container
+docker exec -it falcon bin/falcon remote
+
+# Run migrations manually
+docker exec -it falcon bin/migrate
+```
+
+### Configuration
 
 | Variable | Default | Description |
 |---|---|---|
